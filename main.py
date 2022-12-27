@@ -1,16 +1,24 @@
-# This is a sample Python script.
+import requests
+import re
+import time
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+CAP_EXAM_URL = 'https://www.cap.ca/programs/medals-and-awards/prizes-students/university-prize-exam/'
+IFTTT_URL = 'https://maker.ifttt.com/trigger/2023_happened/json/with/key/Y8PV4q9Q5XZ9dv5b1Ce3m'
+OLD_NEWS = 20 # this many unrelated 2023's
+SLEEP = 24 * 60 * 60
 
+# get and check website text daily
+def scan():
+    capsite = requests.get(CAP_EXAM_URL).text
+    cnt = re.findall('2023', capsite)
+    return cnt != OLD_NEWS
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+# notify when new 2023 detected
+def main():
+    while True:
+        if scan():
+            requests.post(IFTTT_URL)
+        time.sleep(SLEEP)
 
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    main()
